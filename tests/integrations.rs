@@ -9,7 +9,6 @@ fn pc_value() {
         None,
     );
     assert_eq!(state2.pc, 12);
-    println!("{}", state.to_string());
 }
 
 #[test]
