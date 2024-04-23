@@ -2,11 +2,12 @@ use mips_emulator::{compile_and_execute, state::State};
 
 #[test]
 fn pc_value() {
-    let state = compile_and_execute(String::from("ADDI $5 $0 5"), None);
+    let state = compile_and_execute(String::from("ADDI $5 $0 5"), None, None);
     assert_eq!(state.pc, 4);
     let state2 = compile_and_execute(
         String::from("ADD $1 $0 $2\nADD $1 $0 $2\nSUB $1 $0 $2"),
         None,
+        None
     );
     assert_eq!(state2.pc, 12);
 }
@@ -18,7 +19,7 @@ fn prev_state_inferred() {
     prev_state.registers[2] = 2;
     prev_state.registers[3] = 3;
     prev_state.registers[4] = 4;
-    let state = compile_and_execute(String::from("ADDI $5 $0 5"), Some(prev_state));
+    let state = compile_and_execute(String::from("ADDI $5 $0 5"), Some(prev_state), None);
     assert_eq!(state.registers[0], 0);
     assert_eq!(state.registers[1], 1);
     assert_eq!(state.registers[2], 2);
@@ -33,6 +34,7 @@ fn add_test2() {
     let state = compile_and_execute(
         String::from("ADDI $1 $0 22\nADDI $2 $0 33\nADD $3 $1 $2\nADD $4 $3 $1"),
         None,
+        None
     );
     assert_eq!(state.registers[0], 0);
     assert_eq!(state.registers[1], 22);

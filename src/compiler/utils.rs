@@ -65,6 +65,45 @@ pub fn convert_register_alias(reg_alias: &str) -> &str{
     };
 }
 
+pub fn get_register_alias(reg_string: &str) -> &str {
+    return match reg_string {
+        "0" => "r0",
+        "1" => "at",
+        "2" => "v0",
+        "3" => "v1",
+        "4" => "a0",
+        "5" => "a1",
+        "6" => "a2",
+        "7" => "a3",
+        "8" => "t0",
+        "9" => "t1",
+        "10" => "t2",
+        "11" => "t3",
+        "12" => "t4",
+        "13" => "t5",
+        "14" => "t6",
+        "15" => "t7",
+        "16" => "s0",
+        "17" => "s1",
+        "18" => "s2",
+        "19" => "s3",
+        "20" => "s4",
+        "21" => "s5",
+        "22" => "s6",
+        "23" => "s7",
+        "24" => "t8",
+        "25" => "t9",
+        "26" => "k0",
+        "27" => "k1",
+        "28" => "gp",
+        "29" => "sp",
+        "30" => "fp",
+        "31" => "ra",
+        _ => reg_string
+    };
+    
+}
+
 pub fn decode_immediate(imm_string: &str) -> u32{
     if imm_string.starts_with("0x"){
         let res = u32::from_str_radix(imm_string.strip_prefix("0x").unwrap(), 16);
@@ -101,6 +140,12 @@ pub fn decode_register_number(reg_string: &str) -> u32{
         }
     }
 }
+
+pub fn _get_binary(value: u32) -> String{
+    let aa = format!("{value:032b}");
+    return aa;
+}
+
 
 #[cfg(test)]
 mod tests {

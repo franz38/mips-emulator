@@ -1,4 +1,4 @@
-mod utils;
+pub mod utils;
 mod encode_r;
 mod encode_i;
 mod encode_j;

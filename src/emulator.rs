@@ -6,7 +6,7 @@ mod run_j;
 mod slice_instruction;
 
 
-pub fn run(binary_code: &[u32], binary_size: usize, prev_state: Option<State>) -> State {
+pub fn run(binary_code: &[u32], binary_size: usize, prev_state: Option<State>, steps: u32) -> State {
     
     let mut registers: [u32; 32] = [0; 32];
     let mut lo: u32 = 0;
@@ -28,6 +28,7 @@ pub fn run(binary_code: &[u32], binary_size: usize, prev_state: Option<State>) -
     }
 
     let mut exit: bool = false;
+    let mut counter: u32 = 0;
 
     while virtual_pc < binary_size && !exit{
         
@@ -45,6 +46,12 @@ pub fn run(binary_code: &[u32], binary_size: usize, prev_state: Option<State>) -
             exit = run_i::run_i(ir, &mut registers, &mut virtual_pc, &mut memory);
         }
 
+        counter += 1;
+
+        if counter >= steps {
+            exit = true;
+        }
+
     }
 
     let state = State {
@@ -55,6 +62,8 @@ pub fn run(binary_code: &[u32], binary_size: usize, prev_state: Option<State>) -
         ir,
         pc: (virtual_pc*4) as u32
     };
+
+    println!("{}", state.to_string());
 
     return state;
 
@@ -71,7 +80,7 @@ mod test_instruction_emulation{
         let mut state = State::blank_state();
         state.registers[8] = 44;
         let binary: [u32; 1] = [0x01092020]; // add $a0, $t0, $t1
-        state = run(&binary, 1, Option::Some(state));
+        state = run(&binary, 1, Option::Some(state), u32::max_value());
         assert_eq!(state.registers[8], 44);
         assert_eq!(state.registers[4], 44);
     }
@@ -82,7 +91,7 @@ mod test_instruction_emulation{
         state.registers[15] = 44;
         state.registers[9] = 11;
         let binary: [u32; 1] = [0x01e93022]; // sub $a2, $t7, $t1
-        state = run(&binary, 1, Option::Some(state));
+        state = run(&binary, 1, Option::Some(state), u32::max_value());
         assert_eq!(state.registers[15], 44);
         assert_eq!(state.registers[9], 11);
         assert_eq!(state.registers[6], 33);

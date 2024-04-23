@@ -1,6 +1,6 @@
 use crate::compiler::utils::get_register_alias;
 
-
+// #[wasm_bindgen]
 pub struct State{
     pub registers: [u32; 32],
     pub memory: [u32; 200],
@@ -8,6 +8,15 @@ pub struct State{
     pub hi: u32,
     pub pc: u32,
     pub ir: u32
+}
+
+// pub struct  State2 {
+
+// }
+
+
+pub struct Abc {
+    pub abc: u32,
 }
 
 impl State {
@@ -20,6 +29,45 @@ impl State {
             ir: 0,
             pc: 0
         };
+    }
+
+    pub fn from_vec(vec: &Vec<u32>) -> Self {
+        let mut s = Self {
+            registers: [0; 32],
+            memory: [0; 200],
+            lo: vec[2],
+            hi: vec[3],
+            ir: vec[1],
+            pc: vec[0]
+        };
+        
+        for i in 0..32 {
+            s.registers[i] = vec[i+4];
+        }
+
+        for i in 0..200 {
+            s.memory[i] = vec[i+36];
+        }
+
+        return  s;
+    }
+
+    pub fn to_vec(&self) -> Vec<u32> {
+        let mut v = Vec::<u32>::new();
+        v.push(self.pc);
+        v.push(self.ir);
+        v.push(self.lo);
+        v.push(self.hi);
+
+        for i in 0..32 {
+            v.push(self.registers[i]);
+        }
+
+        for i in 0..200 {
+            v.push(self.memory[i]);
+        }
+
+        return v;
     }
 
     fn var_to_string(label1: &str, value1: &u32, label2: &str, value2: &u32) -> String{
@@ -50,5 +98,29 @@ impl State {
             &registers_table +
             &Self::end_line()
         );
+    }
+}
+
+#[cfg(test)]
+mod state_conversion_test{
+    use super::State;
+
+
+    #[test]
+    fn state_2_vec(){
+        let mut state = State::blank_state();
+        state.registers[0] = 44;
+        state.registers[10] = 77;
+        state.hi = 33;
+
+        let mut v_state: Vec<u32> = vec![0; 36];
+        v_state[3] = 33;
+        v_state[4] = 44;
+        v_state[14] = 77;
+
+        assert_eq!(v_state, state.to_vec());
+        assert_eq!(State::from_vec(&v_state).registers[10], 77);
+        assert_eq!(State::from_vec(&v_state).registers[0], 44);
+        assert_eq!(State::from_vec(&v_state).hi, 33);
     }
 }
