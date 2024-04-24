@@ -10,14 +10,19 @@ import { Editor } from './components/Editor';
 
 
 const App: Component = () => {
-  const [code, setCode] = createSignal("ADDI $2 $0 999");
-  const [registers, setRegisters] = createSignal<number[]>(Array.from(Array(36)).map((_,i) => 0));
+  const [code, setCode] = createSignal("ADDI $2 $0 999\nADDI $3 $0 11\nSW $2 0($0)\nSW $3 1($0)");
+  const [registers, setRegisters] = createSignal<Uint32Array>(xyz.compile_and_execute_js(""));
   
   const onMouseClick = (data, _event) => {
     console.log(code());
     let newState = xyz.compile_and_execute_js(code())
     setRegisters(newState)
     console.log(newState)
+  }
+  
+  const onStep = (data, _e) => {
+    let ns = xyz.compile_and_execute_js(code(), registers(), 1);
+    setRegisters(ns)
   }
 
   onMount(async () => {
@@ -28,12 +33,13 @@ const App: Component = () => {
     <>
       
       <div style="display: flex">
-        
+
         <RegistersTable registers={registers()} />
         
         <div class="editor" style="">
           <textarea onInput={e => setCode(e.target.value)} rows="20">{code()}</textarea>
-          <button onClick={[onMouseClick, undefined]}>compile</button>
+          <button onClick={[onMouseClick, undefined]}>run</button>
+          <button onClick={[onStep, undefined]}>step</button>
         </div>
 
         
