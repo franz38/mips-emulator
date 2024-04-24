@@ -1,12 +1,14 @@
 import type { Component } from 'solid-js';
-import {createSignal, onMount} from 'solid-js';
+import {For, createSignal, onMount} from 'solid-js';
 
 import logo from './logo.svg';
 import styles from './App.module.css';
 import * as xyz from "mips-emulator";
 import { RegistersTable } from './components/RegistersTable';
 import { MemoryTable } from './components/MemoryTable';
-import { Editor } from './components/Editor';
+import { formatU32 } from './utils/registers';
+import { Td } from './components/Td';
+import { CODE_BASE } from './utils/constants';
 
 
 const App: Component = () => {
@@ -37,7 +39,18 @@ const App: Component = () => {
         <RegistersTable registers={registers()} />
         
         <div class="editor" style="">
-          <textarea onInput={e => setCode(e.target.value)} rows="20">{code()}</textarea>
+
+          <div class="wrapper">
+            <table class="lineNumbers">
+              <tbody>
+                <For each={[...Array(20)].map((_,i) => i)} >{(a,b) => 
+                  <tr><Td value={"[" + formatU32(CODE_BASE + b()*4, "hex") + "]"}/></tr>
+                }</For>
+              </tbody>
+            </table>
+            <textarea onInput={e => setCode(e.target.value)} rows="20">{code()}</textarea>
+          </div>
+
           <button onClick={[onMouseClick, undefined]}>run</button>
           <button onClick={[onStep, undefined]}>step</button>
         </div>

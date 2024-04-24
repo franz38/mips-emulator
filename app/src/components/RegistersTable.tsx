@@ -2,6 +2,8 @@ import {For, createSignal} from 'solid-js';
 import { CellRow } from './CellRow';
 import { formatU32, getRegisterName } from '../utils/registers';
 import { Td } from './Td';
+import { CODE_BASE } from '../utils/constants';
+import { CheckBox } from './CheckBox';
 
 
 interface RTableProps {
@@ -32,15 +34,17 @@ export const RegistersTable = (props: RTableProps) => {
     <div class="registerTableBox">
      
       <div class="header" style="display: flex">
-        <div>
-          <input type='checkbox' id="regalias" checked={useRegAlias()} onInput={e => setUserRegAlias(e.target.checked)} />
-          <label for="regalias">register alias</label>
-        </div>
+        <CheckBox 
+          checked={useRegAlias()}
+          onClick={v => setUserRegAlias(v)}
+          label='register alias'
+        />
 
-        <div>
-          <input type='checkbox' id="usehex" checked={format() === "hex"} onInput={e => setFormat(e.target.checked ? "hex" : "dec")} />
-          <label for="usehex">hex values</label>
-        </div>
+        <CheckBox 
+          checked={format() === "hex"}
+          onClick={v => setFormat(v ? "hex" : "dec")}
+          label='hex values'
+        />
       </div>
 
       <table class='registersTable'>
@@ -48,7 +52,7 @@ export const RegistersTable = (props: RTableProps) => {
           
           <tr>
             <Td value={"pc"} />
-            <Td isValue value={formatU32(props.registers[0], format())} />
+            <Td isValue value={formatU32(CODE_BASE + props.registers[0], format())} />
             <Td value={"ir"} />
             <Td isValue value={formatU32(props.registers[1], format())} />
           </tr>

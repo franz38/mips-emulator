@@ -1,12 +1,11 @@
 import {For, createSignal} from 'solid-js';
 import { formatU32} from '../utils/registers';
 import { Td } from './Td';
-
-const MEM_BASE: number = 0x10010000;
+import { MEM_BASE } from '../utils/constants';
+import { CheckBox } from './CheckBox';
 
 export const MemoryTable = (props: {memory: number[]}) => {
  
-  const [useHex, setUsehex] = createSignal<boolean>(true);
   const [format, setFormat] = createSignal<"hex" | "dec">("hex");
   
   const memoryPage = () => {
@@ -27,8 +26,11 @@ export const MemoryTable = (props: {memory: number[]}) => {
     <div class="memoryTableBox">
       
       <div class="header">
-        <input type='checkbox' id="usehex" checked={format() === "hex"} onInput={e => setFormat(e.target.checked ? "hex" : "dec")} />
-        <label for="usehex">hex values</label>
+        <CheckBox 
+          checked={format() === "hex"}
+          onClick={v => setFormat(v ? "hex" : "dec")}
+          label='hex values'
+        />
       </div>
 
       <table class='memoryTable'>
