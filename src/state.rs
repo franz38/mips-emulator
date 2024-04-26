@@ -1,4 +1,15 @@
+use std::{fmt::format, usize};
+
 use crate::compiler::utils::get_register_alias;
+
+pub const REG_SIZE: usize = 36;
+pub const INSTRUCTION_SIZE: usize = 1024;
+pub const STACK_SIZE: usize = 4096;
+
+pub const A: usize = 0;
+pub const B: usize = REG_SIZE;
+pub const C: usize = REG_SIZE + INSTRUCTION_SIZE;
+pub const D: usize = REG_SIZE + INSTRUCTION_SIZE + STACK_SIZE;
 
 // #[wasm_bindgen]
 pub struct State{
@@ -10,117 +21,52 @@ pub struct State{
     pub ir: u32
 }
 
-// pub struct  State2 {
+// registers : [pc, ir, lo, hi, $0, $1, .., $32]
 
-// }
+pub struct StateManager {}
 
-
-pub struct Abc {
-    pub abc: u32,
-}
-
-impl State {
-    pub fn blank_state() -> Self{
-        return Self {
-            registers: [0; 32],
-            memory: [0; 200],
-            lo: 0,
-            hi: 0,
-            ir: 0,
-            pc: 0
-        };
-    }
-
-    pub fn from_vec(vec: &Vec<u32>) -> Self {
-        let mut s = Self {
-            registers: [0; 32],
-            memory: [0; 200],
-            lo: vec[2],
-            hi: vec[3],
-            ir: vec[1],
-            pc: vec[0]
-        };
-        
-        for i in 0..32 {
-            s.registers[i] = vec[i+4];
-        }
-
-        for i in 0..200 {
-            s.memory[i] = vec[i+36];
-        }
-
-        return  s;
-    }
-
-    pub fn to_vec(&self) -> Vec<u32> {
-        let mut v = Vec::<u32>::new();
-        v.push(self.pc);
-        v.push(self.ir);
-        v.push(self.lo);
-        v.push(self.hi);
-
-        for i in 0..32 {
-            v.push(self.registers[i]);
-        }
-
-        for i in 0..200 {
-            v.push(self.memory[i]);
-        }
-
+impl StateManager {
+    
+    pub fn init() -> Vec<u32> {
+        let mut v: Vec<u32> = vec![0; D];
         return v;
     }
 
-    fn var_to_string(label1: &str, value1: &u32, label2: &str, value2: &u32) -> String{
-        return format!("{}\n| {:2} | {:10} | {:2} | {:10} |", Self::end_line(), label1, value1, label2, value2);
+    pub fn get(ptr: *mut u32) -> Vec<u32> {
+        unsafe {
+            let mut v = Vec::from_raw_parts(ptr, D, D);
+            return v;
+        }
     }
 
-    fn end_line() -> String {
-        let mut l: [char; 37] = ['-'; 37];
-        l[0] = '+'; l[36] = '+';
-        return l.iter().collect::<String>();
+    pub fn store_code(ptr: *mut u32, code_binary: [u32; 30]) {
+        let mut v = Self::get(ptr);
+        for (pos, instruction) in code_binary.iter().enumerate(){
+            v[REG_SIZE + pos] = *instruction; 
+        }
+        std::mem::forget(v);
     }
+
+    pub fn split(v: &mut [u32]) -> (&mut [u32], &mut [u32], &mut [u32]) {
+        let (registers, b) = v.split_at_mut(REG_SIZE);
+        let (instructions, memory) = b.split_at_mut(INSTRUCTION_SIZE);
+
+        return (registers, instructions, memory)
+    }
+
+    pub fn get_pc(v: &[u32]) -> u32 { v[32] }
+
+    pub fn get_ir(v: &[u32]) -> u32 { v[33] }
     
+    pub fn get_lo(v: &[u32]) -> u32 { v[34] }
+    
+    pub fn get_hi(v: &[u32]) -> u32 { v[35] }
 
-    pub fn to_string(&self) -> String{
-
-        let registers_table = (0..16)
-            .map(|i| Self::var_to_string(
-                get_register_alias(&i.to_string()), 
-                &self.registers[i], 
-                get_register_alias(&(i+16).to_string()), 
-                &self.registers[i+16]) + "\n")
-            .collect::<String>();
-
-        return String::from(
-            Self::var_to_string("PC", &self.pc, "IR", &self.ir) + "\n" +
-            &Self::var_to_string("LO", &self.lo, "HI", &self.hi) + "\n" + 
-            &Self::end_line() + "\n\n" +
-            &registers_table +
-            &Self::end_line()
-        );
+    pub fn to_string(v: &[u32]) -> String {
+        let r: String = v[A..B].iter().map(|v| v.to_string() + "  ").collect();
+        let instructions: String = v[B..(B+100)].iter().map(|v| v.to_string() + "\t").collect();
+        let memory: String = v[C..(C+100)].iter().map(|v| v.to_string() + "\t").collect();
+        return format!("registers:\n{}\n\ninstructions:\n{}\n\nmemory:\n{}", r, instructions, memory);
     }
 }
 
-#[cfg(test)]
-mod state_conversion_test{
-    use super::State;
-
-
-    #[test]
-    fn state_2_vec(){
-        let mut state = State::blank_state();
-        state.registers[0] = 44;
-        state.registers[10] = 77;
-        state.hi = 33;
-
-        let mut v_state: Vec<u32> = vec![0; 36];
-        v_state[3] = 33;
-        v_state[4] = 44;
-        v_state[14] = 77;
-
-        assert_eq!(v_state, state.to_vec());
-        assert_eq!(State::from_vec(&v_state).registers[10], 77);
-        assert_eq!(State::from_vec(&v_state).registers[0], 44);
-        assert_eq!(State::from_vec(&v_state).hi, 33);
-    }
-}
