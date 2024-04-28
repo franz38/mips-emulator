@@ -4,9 +4,8 @@ import { Td } from './Td';
 import { MEM_BASE } from '../utils/constants';
 import { CheckBox } from './CheckBox';
 
-export const MemoryTable = (props: {memory: number[]}) => {
+export const MemoryTable = (props: {memory: number[], format: "dec" | "hex"}) => {
  
-  const [format, setFormat] = createSignal<"hex" | "dec">("hex");
   
   const memoryPage = () => {
     const mPage: number[][] = []
@@ -24,14 +23,6 @@ export const MemoryTable = (props: {memory: number[]}) => {
   return (
 
     <div class="memoryTableBox">
-      
-      <div class="header">
-        <CheckBox 
-          checked={format() === "hex"}
-          onClick={v => setFormat(v ? "hex" : "dec")}
-          label='hex values'
-        />
-      </div>
 
       <table class='memoryTable'>
         <tbody>
@@ -46,11 +37,11 @@ export const MemoryTable = (props: {memory: number[]}) => {
 
           <For each={memoryPage()}>{(memCell,i) =>
             <tr>
-              <Td value={"[" + formatU32(MEM_BASE + i()*4, format()) + "]"} />
-              <Td isValue value={formatU32(memCell[0] ?? 0, format())} />
-              <Td isValue value={formatU32(memCell[1] ?? 0, format())} />
-              <Td isValue value={formatU32(memCell[2] ?? 0, format())} />
-              <Td isValue value={formatU32(memCell[3] ?? 0, format())} />
+              <Td value={"[" + formatU32(MEM_BASE + i()*4, "hex") + "]"} />
+              <Td isValue value={formatU32(memCell[0] ?? 0, props.format)} />
+              <Td isValue value={formatU32(memCell[1] ?? 0, props.format)} />
+              <Td isValue value={formatU32(memCell[2] ?? 0, props.format)} />
+              <Td isValue value={formatU32(memCell[3] ?? 0, props.format)} />
             </tr>
           }</For>
         
