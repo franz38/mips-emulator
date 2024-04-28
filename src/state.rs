@@ -39,11 +39,17 @@ impl StateManager {
         }
     }
 
-    pub fn store_code(ptr: *mut u32, code_binary: [u32; 30]) {
+    pub fn compile(ptr: *mut u32, code_binary: [u32; 30]) {
         let mut v = Self::get(ptr);
+        
+        for i in 0..v.len(){
+            v[i] = 0;
+        }
+
         for (pos, instruction) in code_binary.iter().enumerate(){
             v[REG_SIZE + pos] = *instruction; 
         }
+
         std::mem::forget(v);
     }
 

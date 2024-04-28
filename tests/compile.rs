@@ -33,7 +33,6 @@ fn execute_short_program() {
     compile(ptr, String::from(PROGRAM1));
     run(ptr, None);
     let state = get_state(ptr);
-    println!("{}", StateManager::to_string(&state));
     assert_eq!(state[8], 5);
     assert_eq!(state[9], 15);
     assert_eq!(state[10], 20);
@@ -47,7 +46,6 @@ fn after_program_execution_pc_iscorrect() {
     compile(ptr, String::from(PROGRAM1));
     run(ptr, None);
     let state = get_state(ptr);
-    println!("{}", StateManager::to_string(&state));
     assert_eq!(state[32], 20); 
 }
 
@@ -57,7 +55,6 @@ fn execute_short_program_step_by_step() {
     compile(ptr, String::from(PROGRAM1));
     run(ptr, Some(1));
     let mut state = get_state(ptr);
-    println!("{}", StateManager::to_string(&state));
     assert_eq!(state[8], 5);
     assert_eq!(state[9], 0);
     assert_eq!(state[10], 0);

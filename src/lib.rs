@@ -25,9 +25,9 @@ pub fn init() -> *mut u32 {
 pub fn compile(ptr: *mut u32, code: String) {
     let code_lines: Vec<String> = code.split("\n").map(|v| v.to_string()).collect();
     let binary_code: [u32; 30] = compile_code(code_lines);
-    let code_size = code.split("\n").count();
+    let _code_size = code.split("\n").count();
 
-    StateManager::store_code(ptr, binary_code);
+    StateManager::compile(ptr, binary_code);
 }
 
 #[wasm_bindgen]
