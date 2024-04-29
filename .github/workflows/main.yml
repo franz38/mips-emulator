@@ -8,33 +8,42 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./app
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run tests
-        run: cargo test --verbose
+      - name: Run Cargo test
+        working-directory: ./mips-emulator
+        run: cargo test
       
-      - uses: actions/checkout@v3
+      - uses: jetli/wasm-pack-action@v0.4.0
+
+      - name: Run wasm-pack build
+        working-directory: ./mips-emulator
+        run: wasm-pack build
 
       - name: install
+        working-directory: ./app
         run: npm i --legacy-peer-deps
 
       - name: build
+        working-directory: ./app
         run: npm run build
-        env:
-          BASE_PATH: /app/
 
-      - name: create .nojekyll
-        run: touch .output/public/.nojekyll
-
-      - name: deploy pages
-        uses: JamesIves/github-pages-deploy-action@v4.5.0
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          branch: gh-pages
-          folder: .output/public
+          # Upload dist folder
+          path: './app/dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
