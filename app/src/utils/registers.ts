@@ -45,6 +45,9 @@ export const getRegisterName = (register: number): string => {
 export const formatU32 = (value: number, format: "dec" | "hex"): string => {
   if (format == "dec")
     return value.toString()
-
+  
+  if (value < 0)
+    return '0x' + (0xFFFFFFFF + value + 1).toString(16).padStart(8, '0') 
+    
   return '0x' + value.toString(16).padStart(8, '0') 
 }

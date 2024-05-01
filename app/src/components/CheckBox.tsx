@@ -12,6 +12,9 @@ export const CheckBox = (props: CheckBoxProps) => {
   
   return <div class="cInput">
     <input type='checkbox' id={id()} checked={props.checked} onInput={e => props.onClick(e.target.checked)} />
-    <label for={id()}>{props.label}</label>
+    <label for={id()}>
+      <div class={`tick ${props.checked ? "active" : ""}`}></div>
+      <span>{props.label}</span>
+    </label>
   </div>
 }

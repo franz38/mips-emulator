@@ -12,7 +12,7 @@ import { fibonacci } from './sample_programs/fibonacci';
 
 const App: Component = () => {
 
-  const [registers, setRegisters] = createSignal<Uint32Array>(Uint32Array.from([...Array(6000)].map((_) => 0)));
+  const [registers, setRegisters] = createSignal<Int32Array>(Int32Array.from([...Array(6000)].map((_) => 0)));
   const [ptr, setPtr] = createSignal<number>();
   const [format, setFormat] = createSignal<"hex" | "dec">("hex");
   const [useRegAlias, setUserRegAlias] = createSignal<boolean>(false);
@@ -26,6 +26,7 @@ const App: Component = () => {
       MipsEmulator.run(p, steps)
       const nn = MipsEmulator.get_state(p)
       setRegisters(nn)
+      console.log(nn)
     }
   }
 
@@ -40,7 +41,9 @@ const App: Component = () => {
     
     if (p) {
       MipsEmulator.compile(p, code())
-      setRegisters(MipsEmulator.get_state(p))
+      let v = MipsEmulator.get_state(p)
+      console.log(v)
+      setRegisters(v)
     }
   }
 
@@ -74,14 +77,14 @@ const App: Component = () => {
           label='hex values'
         />
 
-        <select onChange={e => loadScript(e.target.value)}>
+        {/* <select onChange={e => loadScript(e.target.value)}>
           <option value="fizz_buzz">fizz buzz</option>
           <option value="fibonacci">fibonacci</option>
           <option value="empty">empty</option>
-        </select>
+        </select> */} 
       </div>
 
-      <div style="display: flex">
+      <div class="content" style="display: flex">
 
         <RegistersTable 
           registers={registers()}
@@ -93,7 +96,7 @@ const App: Component = () => {
           pc={registers() ? registers()[32] : 0}
           onCompile={() => compile()}
           onRun={(s) => run(s)}
-          instructionMemory={registers().slice(REG_SIZE, INSTRUCTION_SIZE)}
+          instructionMemory={Uint32Array.from(registers().slice(REG_SIZE, INSTRUCTION_SIZE))}
           code={code()}
           setCode={c => setCode(c)}
         />

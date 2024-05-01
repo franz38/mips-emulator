@@ -32,7 +32,7 @@ export const Editor = (props: EditorProps) => {
             <table class="lineNumbers">
               <tbody>
                 <For each={props.instructionMemory.slice(0, 20)} >{(a,b) => 
-                  <tr><Td isValue value={formatU32(a, "hex")}/></tr>
+                  <tr><Td isValue value={formatU32(a > 0 ? a : -a, "hex")}/></tr>
                 }</For>
               </tbody>
             </table>
