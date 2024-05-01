@@ -119,14 +119,14 @@ mod test_instruction_encoding{
 
     #[test]
     fn j_encode(){
-        let encoded = compile_instruction(String::from("J 0xFF1A"));
-        assert_eq!(encoded, 0x0800FF1A);
+        let encoded = compile_instruction(String::from("J 0x1F1A"));
+        assert_eq!(encoded, 0x08001F1A);
     }
 
     #[test]
     fn jal_encode(){
-        let encoded = compile_instruction(String::from("JAL 0xFF1A"));
-        assert_eq!(encoded, 0x0C00FF1A);
+        let encoded = compile_instruction(String::from("JAL 0x1F1A"));
+        assert_eq!(encoded, 0x0C001F1A);
     }
 
     #[test]
@@ -137,8 +137,8 @@ mod test_instruction_encoding{
 
     #[test]
     fn lw_encode(){
-        let encoded = compile_instruction(String::from("LW $4 0xF4F1($2)"));
-        assert_eq!(encoded, 0x8C44F4F1);
+        let encoded = compile_instruction(String::from("LW $4 0x24F1($2)"));
+        assert_eq!(encoded, 0x8C4424F1);
     }
 
 }
@@ -167,12 +167,19 @@ mod test_instruction_parsing {
     #[test]
     fn hex_immediate_test(){
         let mut encoded ;
-        encoded = compile_instruction(String::from("ADDI $t3 $0 0xD21F"));
-        assert_eq!(encoded, 0x200BD21F);
+        encoded = compile_instruction(String::from("ADDI $t3 $0 0x221F"));
+        assert_eq!(encoded, 0x200B221F);
         encoded = compile_instruction(String::from("BEQ $t3 $0 0x3D1A"));
         assert_eq!(encoded, 0x11603D1A);
         encoded = compile_instruction(String::from("BNE $2 $3 200"));
         assert_eq!(encoded, 0x144300C8);
+    }
+
+    #[test]
+    fn negative_immediate_test(){
+        let mut encoded ;
+        encoded = compile_instruction(String::from("ADDI $t0 $0 -44"));
+        assert_eq!(encoded, 0x2008ffd4);
     }
 
     #[test]

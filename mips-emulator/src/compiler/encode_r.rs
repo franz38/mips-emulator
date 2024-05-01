@@ -36,7 +36,7 @@ pub fn encode_logical_shift(split: Vec<&str>) -> u32{
     let rs: u32 = 0;
     let rt: u32 = decode_register_number(split[2]);
     let rd: u32 = decode_register_number(split[1]);
-    let sa: u32 = decode_immediate(split[3]);
+    let sa: u32 = decode_immediate(split[3]) as u32;
     let func: u32 = get_func_code(split[0]);
     return ((op_code << 26) + (rs << 21) + (rt << 16) + (rd << 11) + (sa << 6) + func) as u32;
 }

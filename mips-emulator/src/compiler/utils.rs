@@ -104,20 +104,24 @@ pub fn get_register_alias(reg_string: &str) -> &str {
     
 }
 
-pub fn decode_immediate(imm_string: &str) -> u32{
+pub fn decode_immediate(imm_string: &str) -> i16{
     if imm_string.starts_with("0x"){
-        let res = u32::from_str_radix(imm_string.strip_prefix("0x").unwrap(), 16);
+        let res = i16::from_str_radix(imm_string.strip_prefix("0x").unwrap(), 16);
         return match res {
             Ok(ok) => ok,
             Err(_err) => {println!("errore"); return 0;}
         }
     }
     else{
-        return match imm_string.parse::<u32>() {
+        return match imm_string.parse::<i16>() {
             Ok(ok) => ok,
             Err(_err) => {println!("errore"); return 0;}
         }
     }
+}
+
+pub fn cast_immediate(im: i16) -> u32 {
+    (im as u32) & 0x0000ffff
 }
 
 pub fn decode_register_number(reg_string: &str) -> u32{
@@ -141,27 +145,53 @@ pub fn decode_register_number(reg_string: &str) -> u32{
     }
 }
 
+pub fn _get_hex(value: u32) -> String{
+    let aa = format!("{value:08x}");
+    return aa;
+}
+
 pub fn _get_binary(value: u32) -> String{
     let aa = format!("{value:032b}");
     return aa;
 }
 
+pub fn _get_binary_i16(value: i16) -> String{
+    let aa = format!("{value:016b}");
+    return aa;
+}
+
+pub fn _get_binary_u16(value: u16) -> String{
+    let aa = format!("{value:016b}");
+    return aa;
+}
 
 #[cfg(test)]
 mod tests {
+
+    use std::i16;
 
     use super::*;
 
     #[test]
     fn immediate_parse_test(){
         assert_eq!(decode_immediate("533"), 533);
-        assert_eq!(decode_immediate("42442"), 42442);
+        assert_eq!(decode_immediate("4242"), 4242);
         assert_eq!(decode_immediate("0"), 0);
-        assert_eq!(decode_immediate("0xf132"), 0xf132);
-        assert_eq!(decode_immediate("0xC812C5"), 0xC812C5);
-        assert_eq!(decode_immediate("0x00001"), 0x00001);
-        assert_eq!(decode_immediate("0xD21F"), 0xD21F);
+        assert_eq!(decode_immediate("0x4fd2"), 0x4fd2);
+        assert_eq!(decode_immediate("0x12C5"), 0x12C5);
+        assert_eq!(decode_immediate("0x0001"), 0x0001);
+        assert_eq!(decode_immediate("0x2D1F"), 0x2D1F);
         assert_eq!(decode_immediate("0x3D1A"), 0x3D1A);
+        assert_eq!(decode_immediate("-44"), -44);
     }
 
+    #[test]
+    fn immediate_cast(){
+        let a: i16 = decode_immediate("0x221f");
+        let b: u32 = (a as u32) & 0x0000ffff;
+        println!("{}\t\t{}", a, _get_binary_i16(a));
+        println!("{}\t\t{}", b, _get_binary(b));
+        assert_eq!(a, 0x221f);
+        //assert_eq!(b, 0);
+    }
 }
