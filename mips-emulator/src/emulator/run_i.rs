@@ -10,7 +10,7 @@ pub const SW: u32 = 43;
 pub const LW: u32 = 35;
 
 
-pub fn run_i(instruction: u32, registers: &mut [u32], virtual_pc: &mut usize, memory: &mut [u32]) -> bool{
+pub fn run_i(instruction: u32, registers: &mut [i32], virtual_pc: &mut usize, memory: &mut [i32]) -> bool{
     let rs = get_rs(instruction);
     let rt = get_rt(instruction);
     let im = get_immediate(instruction);
@@ -30,44 +30,44 @@ pub fn run_i(instruction: u32, registers: &mut [u32], virtual_pc: &mut usize, me
     return false;
 }
 
-fn addi(registers: &mut [u32], rs: u32, rt: u32, im: u32){
+fn addi(registers: &mut [i32], rs: u32, rt: u32, im: i32){
     registers[rt as usize] = registers[rs as usize] + im;
 }
 
 // branch on equal
-fn beq(registers: &mut [u32], rs: u32, rt: u32, im: u32, virtual_pc: &mut usize){
+fn beq(registers: &mut [i32], rs: u32, rt: u32, im: i32, virtual_pc: &mut usize){
     if registers[rs as usize] - registers[rt as usize] == 0{
         *virtual_pc += im as usize;
     }
 }
 
 // branch on not equal
-fn bne(registers: &mut [u32], rs: u32, rt: u32, im: u32, virtual_pc: &mut usize){
+fn bne(registers: &mut [i32], rs: u32, rt: u32, im: i32, virtual_pc: &mut usize){
     if registers[rs as usize] - registers[rt as usize] != 0{
         *virtual_pc += im as usize;
     }
 }
 
 // branch on less than
-fn _blt(registers: &mut [u32], rs: u32, rt: u32, im: u32, virtual_pc: &mut usize){
+fn _blt(registers: &mut [i32], rs: u32, rt: u32, im: i32, virtual_pc: &mut usize){
     if registers[rs as usize] < registers[rt as usize]{
         *virtual_pc += (im/4)as usize;
     }
 }
 
 // branch on less than or equal
-fn _ble(registers: &mut [u32], rs: u32, rt: u32, im: u32, virtual_pc: &mut usize){
+fn _ble(registers: &mut [i32], rs: u32, rt: u32, im: i32, virtual_pc: &mut usize){
     if registers[rs as usize] <= registers[rt as usize]{
         *virtual_pc += (im/4)as usize;
     }
 }
 
-fn sw(registers: &mut [u32], rs: u32, rt: u32, im: u32, memory: &mut [u32]){
-    memory[(rs + im) as usize] = registers[rt as usize];
+fn sw(registers: &mut [i32], rs: u32, rt: u32, im: i32, memory: &mut [i32]){
+    memory[(rs as i32 + im) as usize] = registers[rt as usize];
 }
 
-fn lw(registers: &mut [u32], rs: u32, rt: u32, im: u32, memory: &mut [u32]){
-    registers[rt as usize] = memory[(rs + im) as usize];
+fn lw(registers: &mut [i32], rs: u32, rt: u32, im: i32, memory: &mut [i32]){
+    registers[rt as usize] = memory[(rs as i32 + im) as usize];
 }
 
 

@@ -11,7 +11,7 @@ pub const SRL: u32 = 2;
 pub const MFLO: u32 = 18;
 pub const MFHI: u32 = 16;
 
-pub fn run_r(instruction: u32, registers: &mut [u32], lo_p: &mut u32, hi_p: &mut u32) -> bool{
+pub fn run_r(instruction: u32, registers: &mut [i32], lo_p: &mut u32, hi_p: &mut u32) -> bool{
     let rs = get_rs(instruction);
     let rt = get_rt(instruction);
     let rd = get_rd(instruction);
@@ -34,50 +34,50 @@ pub fn run_r(instruction: u32, registers: &mut [u32], lo_p: &mut u32, hi_p: &mut
     return false;
 }
 
-fn add(registers: &mut [u32], rs: u32, rt: u32, rd: u32){
+fn add(registers: &mut [i32], rs: u32, rt: u32, rd: u32){
     registers[rd as usize] = registers[rs as usize] + registers[rt as usize];
 }
 
-fn sub(registers: &mut [u32], rs: u32, rt: u32, rd: u32){
+fn sub(registers: &mut [i32], rs: u32, rt: u32, rd: u32){
     registers[rd as usize] = registers[rs as usize] - registers[rt as usize];
 }
 
-fn and(registers: &mut [u32], rs: u32, rt: u32, rd: u32){
+fn and(registers: &mut [i32], rs: u32, rt: u32, rd: u32){
     registers[rd as usize] = registers[rs as usize] & registers[rt as usize];
 }
 
-fn or(registers: &mut [u32], rs: u32, rt: u32, rd: u32){
+fn or(registers: &mut [i32], rs: u32, rt: u32, rd: u32){
     registers[rd as usize] = registers[rs as usize] | registers[rt as usize];
 }
 
-fn sll(registers: &mut [u32], rt: u32, rd: u32, sh: u32){
+fn sll(registers: &mut [i32], rt: u32, rd: u32, sh: u32){
     registers[rd as usize] = registers[rt as usize] << sh;
 }
 
-fn srl(registers: &mut [u32], rt: u32, rd: u32, sh: u32){
+fn srl(registers: &mut [i32], rt: u32, rd: u32, sh: u32){
     registers[rd as usize] = registers[rt as usize] >> sh;
 }
 
-fn _nor(registers: &mut [u32], rs: u32, rt: u32, rd: u32){
+fn _nor(registers: &mut [i32], rs: u32, rt: u32, rd: u32){
     registers[rd as usize] = !(registers[rs as usize] | registers[rt as usize]);
 }
 
-fn _xor(registers: &mut [u32], rs: u32, rt: u32, rd: u32){
+fn _xor(registers: &mut [i32], rs: u32, rt: u32, rd: u32){
     registers[rd as usize] = registers[rs as usize] ^ registers[rt as usize];
 }
 
-fn mult(registers: &mut [u32], rs: u32, rt: u32, lo_p: &mut u32, hi_p: &mut u32){
+fn mult(registers: &mut [i32], rs: u32, rt: u32, lo_p: &mut u32, hi_p: &mut u32){
     let tot: u64 = registers[rs as usize] as u64 * registers[rt as usize] as u64;
     *lo_p = (tot & 0xFFFFFFFF) as u32;
     *hi_p = (tot >> 32) as u32;
 }
 
-fn mflo(registers: &mut [u32], rd: u32, lo_p: &mut u32){
-    registers[rd as usize] = *lo_p;
+fn mflo(registers: &mut [i32], rd: u32, lo_p: &mut u32){
+    registers[rd as usize] = *lo_p as i32;
 }
 
-fn mfhi(registers: &mut [u32], rd: u32, hi_p: &mut u32){
-    registers[rd as usize] = *hi_p;
+fn mfhi(registers: &mut [i32], rd: u32, hi_p: &mut u32){
+    registers[rd as usize] = *hi_p as i32;
 }
 
 #[cfg(test)]
@@ -86,7 +86,7 @@ mod tests {
 
     #[test]
     fn r_instructions(){
-        let mut registers: [u32; 32] = [1; 32];
+        let mut registers: [i32; 32] = [1; 32];
         add(&mut registers, 1, 2, 2);
         assert_eq!(registers[2], 2);
         sub(&mut registers, 2, 2, 3);
@@ -95,7 +95,7 @@ mod tests {
 
     #[test]
     fn and_test(){
-        let mut registers: [u32; 32] = [1; 32];
+        let mut registers: [i32; 32] = [1; 32];
         registers[1] = 534;
         registers[2] = 53434;
         and(&mut registers, 1, 2, 3);
@@ -108,7 +108,7 @@ mod tests {
 
     #[test]
     fn or_test(){
-        let mut registers: [u32; 32] = [1; 32];
+        let mut registers: [i32; 32] = [1; 32];
         registers[2] = 534;
         registers[3] = 53434;
         or(&mut registers, 2, 3, 3);

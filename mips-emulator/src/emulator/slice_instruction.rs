@@ -31,10 +31,23 @@ pub fn get_function(instruction: u32) -> u32 {
     return instruction & FUNC_MASK;
 }
 
-pub fn get_immediate(instruction: u32) -> u32 {
-    return instruction & IMM_MASK;
+pub fn get_immediate(instruction: u32) -> i32 {
+    return (instruction & IMM_MASK) as i16 as i32;
 }
 
 pub fn get_jump(instruction: u32) -> u32 {
     return instruction & JUMP_MASK;
+}
+
+
+#[cfg(test)]
+mod slice_instruction_test {
+    use crate::emulator::slice_instruction::get_immediate;
+
+
+    #[test]
+    fn negative_immediate() {
+        let instruction: u32 = 0x2008ffe5;
+        assert_eq!(get_immediate(instruction), -27, "error decoding negative immediate");
+    }
 }

@@ -1,6 +1,4 @@
-use std::{fmt::format, usize};
-
-use crate::compiler::utils::get_register_alias;
+use std::usize;
 
 pub const REG_SIZE: usize = 36;
 pub const INSTRUCTION_SIZE: usize = 1024;
@@ -27,19 +25,19 @@ pub struct StateManager {}
 
 impl StateManager {
     
-    pub fn init() -> Vec<u32> {
-        let mut v: Vec<u32> = vec![0; D];
+    pub fn init() -> Vec<i32> {
+        let v: Vec<i32> = vec![0; D];
         return v;
     }
 
-    pub fn get(ptr: *mut u32) -> Vec<u32> {
+    pub fn get(ptr: *mut i32) -> Vec<i32> {
         unsafe {
-            let mut v = Vec::from_raw_parts(ptr, D, D);
+            let v = Vec::from_raw_parts(ptr, D, D);
             return v;
         }
     }
 
-    pub fn compile(ptr: *mut u32, code_binary: [u32; 30]) {
+    pub fn compile(ptr: *mut i32, code_binary: [i32; 30]) {
         let mut v = Self::get(ptr);
         
         for i in 0..v.len(){
@@ -53,7 +51,7 @@ impl StateManager {
         std::mem::forget(v);
     }
 
-    pub fn split(v: &mut [u32]) -> (&mut [u32], &mut [u32], &mut [u32]) {
+    pub fn split(v: &mut [i32]) -> (&mut [i32], &mut [i32], &mut [i32]) {
         let (registers, b) = v.split_at_mut(REG_SIZE);
         let (instructions, memory) = b.split_at_mut(INSTRUCTION_SIZE);
 

@@ -10,11 +10,11 @@ mod encode_j;
 // J:   | opcode | address                                  |
 
 
-pub fn compile_code(lines: Vec<String>) -> [u32; 30]{
+pub fn compile_code(lines: Vec<String>) -> [i32; 30]{
     let size: usize = lines.len();
-    let mut binary_code: [u32; 30] = [0; 30];
+    let mut binary_code: [i32; 30] = [0; 30];
     for i in 0..size{
-        binary_code[i] = compile_instruction(lines[i].clone());
+        binary_code[i] = compile_instruction(lines[i].clone()) as i32;
     }
     return binary_code;
 }
@@ -177,7 +177,7 @@ mod test_instruction_parsing {
 
     #[test]
     fn negative_immediate_test(){
-        let mut encoded ;
+        let encoded ;
         encoded = compile_instruction(String::from("ADDI $t0 $0 -44"));
         assert_eq!(encoded, 0x2008ffd4);
     }
